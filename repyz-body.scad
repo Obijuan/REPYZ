@@ -13,10 +13,14 @@ base_cres = 4;
 ear_lx = 23.8;
 ear_lz = 7.4;
 
+ear_size = [2.5, 18, 7.4];
+ear_pos_h = 1.5;
+
 foot_th = 6;
-foot_size = [foot_th, 23, ear_lz];
+foot_size = [foot_th + ear_size[X], 23, ear_lz];
 
 foot_drill_diam = 3.2;
+foot_drill_h = 1.6;
 
 //-- Distance between the center of the two
 //-- foot drills
@@ -68,31 +72,42 @@ module foot()
 {
 
   nut_co = nut_h + extra;
+  
+  ear_co_size = [ear_size[X]+extra, ear_size[Y], ear_size[Z]+extra];
+  foot_drill_pos = [0, 
+               foot_drill_dx/2, 
+               -foot_size[Z]/2 + foot_drill_diam/2 + foot_drill_h];
 
   difference() {
     //-- Main foot body
     cube(foot_size, center = true);
     
+    //-- space for the servo ear
+    translate([-ear_co_size[X]/2 - foot_size[X]/2 + ear_size[X],
+               0,
+               0])
+    cube(ear_co_size, center = true);
+    
     //-- Foot drills
-    translate([0, foot_drill_dx/2, 0])
+    translate(foot_drill_pos)
     rotate([0, 90, 0])
     cylinder(r = foot_drill_diam/2, h = foot_size[X] + extra, center = true);
 
-    translate([0, -foot_drill_dx/2, 0])
+    translate([foot_drill_pos[X], -foot_drill_pos[Y], foot_drill_pos[Z]])
     rotate([0, 90, 0])
     cylinder(r = foot_drill_diam/2, h = foot_size[X] + extra, center = true);
     
     //-- Embebed nuts
     translate([nut_co/2 + foot_size[X]/2 - nut_h,
                foot_drill_dx/2,
-                0])
+                foot_drill_pos[Z]])
      rotate([0,90,0])
      rotate([0,0,90])
      cylinder(r = nut_radius, h = nut_co, center = true, $fn=6);
  
      translate([nut_co/2 + foot_size[X]/2 - nut_h,
                -foot_drill_dx/2,
-                0])
+                foot_drill_pos[Z]])
      rotate([0,90,0])
      rotate([0,0,90])
      cylinder(r = nut_radius, h = nut_co, center = true, $fn=6);
@@ -108,7 +123,7 @@ module foot()
  
 //--------- PART building -----------------
 
-%difference() {
+difference() {
   //-- The base
   bcube(base_size, cr = base_cr, cres = base_cres);
   
@@ -119,7 +134,6 @@ module foot()
   }
   
   //-- Central cutout
-  color("red")
   bcube(co1_size, cr = base_cr, cres = base_cres);
 
 }  
@@ -136,13 +150,12 @@ translate([-foot_pos[X], foot_pos[Y], foot_pos[Z]])
 foot();
 
 //-- Left step
-translate(step1_pos)
+*translate(step1_pos)
 cube(step1_size, center = true);
 
 
 
 //--- Things TODO
-//-- * drills and nuts.. a little bit closer to the base (lower)
 //-- * Feet reinforcements
 //-- * (optional) more cutouts
 

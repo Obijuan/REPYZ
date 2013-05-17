@@ -7,7 +7,7 @@ Z = 2;
 //----------------- USER parameters ------------------
 base_side = 52;
 base_th = 3;
-base_cr = 2;
+base_cr = 3;
 base_cres = 4;
 
 ear_lx = 23.8;
@@ -97,5 +97,10 @@ foot();
 
 
 
-
+//--- Things TODO
+//-- * drills and nuts.. a little bit closer to the base (lower)
+//-- * Skymega drills
+//-- * Feet reinforcements
+//-- * Internal cutout
+//-- * external cutouts
 

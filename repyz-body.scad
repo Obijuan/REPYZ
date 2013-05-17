@@ -14,7 +14,7 @@ ear_lx = 23.8;
 ear_lz = 7.4;
 
 foot_th = 6;
-foot_size = [foot_th, 20, ear_lz];
+foot_size = [foot_th, 23, ear_lz];
 
 foot_drill_diam = 3.2;
 
@@ -22,7 +22,7 @@ foot_drill_diam = 3.2;
 //-- foot drills
 foot_drill_dx = 6.6 + foot_drill_diam;
 
-//---- DATA calculation
+//---------------------- DATA calculation
 base_size = [base_side, base_side, base_th];
 
 //-- Distance in x between the two feet
@@ -33,11 +33,36 @@ foot_pos = [foot_size[X]/2 + feet_dx/2,
             0,
             foot_size[Z]/2 + base_size[Z]/2];
 
+            //foot_pos[X] - foot_size[X]
+//-- Steps----
+step1_size = [2.5, foot_size[Y], 1.5];
+step1_pos = [-step1_size[X]/2 - foot_pos[X] - foot_size[X]/2,
+            0,
+            step1_size[Z]/2 + base_size[Z]/2];
+            
 //-- captive Nuts
 nut_h = 3;
 nut_radius = 6.6/2;            
             
-extra = 5;            
+extra = 5;
+
+
+//--- SKYMEGA Drills
+sky_dd = 15;  //-- Distance
+
+sky_drill_table = [
+  [sky_dd, sky_dd, 0],
+  [-sky_dd, sky_dd, 0],
+  [-sky_dd, -sky_dd, 0],
+  [sky_dd, -sky_dd, 0],
+];
+
+sky_drill_diam = 3.2;
+
+
+//--- Center cutouts
+co1_size = [feet_dx - 2, foot_size[Y], base_size[Z]+extra];
+
 
 module foot()
 {
@@ -78,12 +103,27 @@ module foot()
 //foot(); 
 
 
+
+
  
 //--------- PART building -----------------
 
-//-- The base
-bcube(base_size, cr = base_cr, cres = base_cres);
+%difference() {
+  //-- The base
+  bcube(base_size, cr = base_cr, cres = base_cres);
+  
+  //-- Skymega drills
+  for (drill = sky_drill_table) {
+    translate(drill)
+      cylinder(r=sky_drill_diam/2, h=base_size[Z]+extra,center=true, $fn=6);
+  }
+  
+  //-- Central cutout
+  color("red")
+  bcube(co1_size, cr = base_cr, cres = base_cres);
 
+}  
+  
 //-- The feet
 
 //-- Right foot
@@ -95,12 +135,14 @@ foot();
 translate([-foot_pos[X], foot_pos[Y], foot_pos[Z]])
 foot();
 
+//-- Left step
+translate(step1_pos)
+cube(step1_size, center = true);
+
 
 
 //--- Things TODO
 //-- * drills and nuts.. a little bit closer to the base (lower)
-//-- * Skymega drills
 //-- * Feet reinforcements
-//-- * Internal cutout
-//-- * external cutouts
+//-- * (optional) more cutouts
 

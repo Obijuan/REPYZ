@@ -234,7 +234,7 @@ right_arm_pos = [-arm_size[X]/2 + base_size[X]/2,
                  0,
                  arm_size[Z]/2 + base_size[Z]/2 -0.01];
                  
-left_arm_pos = [right_arm_pos[X] - arm_dx,
+left_arm_pos = [right_arm_pos[X] - arm_size[X] +-arm_dx,
                  right_arm_pos[Y],
                  right_arm_pos[Z]];         
 
@@ -258,6 +258,25 @@ ab_en1 = [ ab_ec1[0], [1,-1,0], 0];
 
 ab_ec2 =[ [ab_pos[X], -ab_pos[Y], ab_pos[Z]], [0,0,1], 0]; 
 ab_en2 = [ ab_ec1[0], [1,1,0], 0];
+
+//-- Reinforment for the arm in x
+rax_l = arm_size[Y];
+rax_pos = [-arm_size[X]/2, 0, -arm_size[Z]/2];
+rax_cr = 4;
+rax_cres = 0;
+
+rax_ec1 = [[rax_pos[X], rax_pos[Y], rax_pos[Z]], [0,1,0], 0];
+rax_en1 = [ rax_ec1[0], [-1,0,1], 0];
+
+//-- Reinforment of the left arm in x (outter side)
+rax2_cr = base_size[X] - 2*arm_size[X] - arm_dx;
+rax2_l = rax_l;
+rax2_pos = [rax_pos[X] + arm_size[X], rax_pos[Y], rax_pos[Z]];
+rax2_ec1 = [[rax2_pos[X], rax2_pos[Y], rax2_pos[Z]], [0,1,0], 0];
+rax2_en1 = [ rax2_ec1[0], [1,0,1], 0];
+
+*connector(rax2_ec1);
+*connector(rax2_en1);
 
 *connector(ray_ec2);
 *connector(ray_en2);
@@ -283,6 +302,10 @@ module arm_common()
   
   //-- Reinforments in the y direction (back)
   bconcave_corner_attach(ray_ec2, ray_en2, l=ray_th, cr=ray_cr, cres=ray_cres, th=0.1);
+  
+  //-- Reinformets in the x direction (only inner part)
+  bconcave_corner_attach(rax_ec1, rax_en1, l=rax_l, cr=rax_cr, cres=rax_cres, th=0.1);
+
 }
 
 module right_arm()
@@ -325,6 +348,9 @@ module left_arm()
       rotate([0,90,0])
       cylinder(r = fs_diam/2, h = arm_size[X] + extra, center = true);
    }   
+   
+   bconcave_corner_attach(rax2_ec1, rax2_en1, l=rax2_l, cr=rax2_cr, cres=rax_cres, th=0.1);
+   
 }
 
 *right_arm();

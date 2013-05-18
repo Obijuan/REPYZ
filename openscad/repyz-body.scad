@@ -35,6 +35,15 @@ ear_size = [2.5, 18, 7.4];  //-- Servo ears size
 //-- Distance between the top and lower servo ears
 ear_dx = 23.8;
 
+servo_shaft_diam = 8.1;    //-- Servo horn shaft diameter
+servo_horn_drill_diam = 2; //-- Servo horn drills diameter
+
+//-- Radial distance of the rounded servo horn drills
+rounded_horn_drill_distance = 7.3;
+
+//-- Fake shaft
+fs_diam = 8;
+
 //----------- Feet parameters 
 foot_th = 6;
 foot_ly = 23;           //-- Feet length in the y axis
@@ -215,9 +224,142 @@ module repyz_body()
 }
 
 
+//----------------------------------------------------------------------------
+
+//-- Arm
+arm_size = [4, 25,  38];
+arm_dx = 40;  //-- Distance between the right and left arms
+
+right_arm_pos = [-arm_size[X]/2 + base_size[X]/2,
+                 0,
+                 arm_size[Z]/2 + base_size[Z]/2 -0.01];
+                 
+left_arm_pos = [right_arm_pos[X] - arm_dx,
+                 right_arm_pos[Y],
+                 right_arm_pos[Z]];         
+
+//-- Reinforment for the arm in y  
+ray_th = arm_size[X];
+ray_pos = [0, -arm_size[Y]/2, -arm_size[Z]/2];
+ray_cr = base_size[Y]/2 - arm_size[Y]/2;
+ray_cres = 0;
+
+ray_ec1 = [[ray_pos[X], ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
+ray_en1 = [ ray_ec1[0], [0,-1,1], 0];
+
+ray_ec2 = [[ray_pos[X], -ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
+ray_en2 = [ ray_ec2[0], [0,1,1], 0];
+
+//-- Arm beveling
+ab_pos = [arm_size[X]/2, -base_size[Y]/2, -arm_size[Z]/2] ;
+
+ab_ec1 =[ ab_pos, [0,0,1], 0]; 
+ab_en1 = [ ab_ec1[0], [1,-1,0], 0];
+
+ab_ec2 =[ [ab_pos[X], -ab_pos[Y], ab_pos[Z]], [0,0,1], 0]; 
+ab_en2 = [ ab_ec1[0], [1,1,0], 0];
+
+*connector(ray_ec2);
+*connector(ray_en2);
+*connector(ab_ec1);
+*connector(ab_en1);
+
+//-- Right arm cutout
+ra_co1_size = [arm_size[X]+extra, servo_shaft_diam, arm_size[Y]];
+
+//----------------------------------------------------
+//--  Arm shape. Common to the left and right arms
+//----------------------------------------------------
+module arm_common() 
+{
+  cube(arm_size, center = true);
+
+  translate([0,0,arm_size[Z]/2])
+  rotate([0,90,0])
+  cylinder(r = arm_size[Y]/2, h = arm_size[X], center = true);
+  
+  //-- Reinforments in the y direction (front)
+  bconcave_corner_attach(ray_ec1, ray_en1, l=ray_th, cr=ray_cr, cres=ray_cres, th=0.1);
+  
+  //-- Reinforments in the y direction (back)
+  bconcave_corner_attach(ray_ec2, ray_en2, l=ray_th, cr=ray_cr, cres=ray_cres, th=0.1);
+}
+
+module right_arm()
+{
+  difference() {
+    arm_common();
+    
+    //-- Arm beveling
+    bevel(ab_ec1, ab_en1, l = ray_cr, cr = base_cr);
+    bevel(ab_ec2, ab_en2, l = ray_cr, cr = base_cr);
+    
+    //-- Shaft
+    translate([0,0,arm_size[Z]/2])
+    rotate([0,90,0])
+    cylinder(r = servo_shaft_diam/2, h = arm_size[X] + extra, center = true);
+    
+    //-- Cutout
+    translate([0,0, ra_co1_size[Z]/2 + arm_size[Z]/2])
+    cube(ra_co1_size, center = true);
+    
+    //-- Rounded horn drills
+    translate([0, 0, arm_size[Z]/2])
+    rotate([0,90,0])
+    for (i=[0:2]) {
+      rotate([0,0,-90*i])
+        translate([0, rounded_horn_drill_distance, 0])
+          cylinder(r=servo_horn_drill_diam/2, h=arm_size[X]+extra, center=true);
+    }
+  }
+  
+}
+
+module left_arm()
+{
+   difference() {
+     arm_common();
+   
+     //-- Fake shaft drill
+     translate([0,0,arm_size[Z]/2])
+      rotate([0,90,0])
+      cylinder(r = fs_diam/2, h = arm_size[X] + extra, center = true);
+   }   
+}
+
+*right_arm();
+*left_arm();
+
+//-- Head base (the same than the body base)
+difference() {
+    //-- The base
+    bcube(base_size, cr = base_cr, cres = base_cres);
+    
+    //-- Skymega drills
+    for (drill = sky_drill_table) {
+      translate(drill)
+	cylinder(r=sky_drill_diam/2, h=base_size[Z]+extra,center=true, $fn=6);
+    }
+    
+    //-- Central cutout
+    bcube(co1_size, cr = base_cr, cres = base_cres);
+
+  }  
+
+
+translate(right_arm_pos)
+right_arm();
+
+translate(left_arm_pos)
+rotate([0,0,180])
+left_arm();
+
+
+
 //----------------------------------------------------
 //--    MAIN  
 //----------------------------------------------------
+*translate([0,0,20])
 repyz_body();
 
 

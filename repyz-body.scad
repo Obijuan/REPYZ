@@ -1,4 +1,6 @@
 use <obiscad/bcube.scad>
+use <obiscad/bevel.scad>
+use <obiscad/attach.scad>
 
 X = 0;
 Y = 1;
@@ -65,7 +67,7 @@ sky_drill_diam = 3.2;
 
 
 //--- Center cutouts
-co1_size = [feet_dx - 2, foot_size[Y], base_size[Z]+extra];
+co1_size = [feet_dx, foot_size[Y], base_size[Z]+extra];
 
 
 module foot()
@@ -122,7 +124,6 @@ module foot()
 
  
 //--------- PART building -----------------
-
 difference() {
   //-- The base
   bcube(base_size, cr = base_cr, cres = base_cres);
@@ -141,21 +142,71 @@ difference() {
 //-- The feet
 
 //-- Right foot
+//color("blue")
 translate(foot_pos)
 rotate([0,0,180])
 foot();
 
 //-- Left foot
+//color("blue")
 translate([-foot_pos[X], foot_pos[Y], foot_pos[Z]])
 foot();
 
-//-- Left step
-*translate(step1_pos)
-cube(step1_size, center = true);
+//-- Feet reinforment (in x direction)
+//-- Define the connectors
 
+//-- Reinforments x-direction thickness
+rx_th = (foot_size[Y]-ear_size[Y])/2;
+rx_pos = [feet_dx/2 + foot_size[X], ear_size[Y]/2 + rx_th/2, base_size[Z]/2];
+
+rx_ec1 = [ [rx_pos[X], rx_pos[Y], rx_pos[Z]], [0,1,0], 0];
+rx_en1 = [ rx_ec1[0], [1,0,1], 0];
+
+rx_ec2 = [ [-rx_pos[X], rx_pos[Y], rx_pos[Z]], [0,1,0], 0];
+rx_en2 = [ rx_ec2[0], [-1,0,1], 0];
+
+rx_ec3 = [ [-rx_pos[X], -rx_pos[Y], rx_pos[Z]], [0,-1,0], 0];
+rx_en3 = [ rx_ec3[0], [-1,0,1], 0];
+
+rx_ec4 = [ [rx_pos[X], -rx_pos[Y], rx_pos[Z]], [0,-1,0], 0];
+rx_en4 = [ rx_ec4[0], [1,0,1], 0];
+
+//-- For debuging
+*connector(rx_ec4);
+*connector(rx_en4);
+
+bconcave_corner_attach(rx_ec1, rx_en1, l=rx_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(rx_ec2, rx_en2, l=rx_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(rx_ec3, rx_en3, l=rx_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(rx_ec4, rx_en4, l=rx_th, cr=foot_size[Z], cres=0);
+
+
+//-- Reinforments in the y direction
+ry_th = foot_size[X] - ear_size[X];
+ry_pos = [feet_dx/2 + ry_th/2, foot_size[Y]/2, base_size[Z]/2];
+
+ry_ec1 = [ [ry_pos[X], ry_pos[Y], ry_pos[Z]], [-1,0,0], 0];
+ry_en1 = [ ry_ec1[0], [0,1,1], 0];
+
+ry_ec2 = [ [-ry_pos[X], ry_pos[Y], ry_pos[Z]], [1,0,0], 0];
+ry_en2 = [ ry_ec2[0], [0,1,1], 0];
+
+ry_ec3 = [ [-ry_pos[X], -ry_pos[Y], ry_pos[Z]], [1,0,0], 0];
+ry_en3 = [ ry_ec3[0], [0,-1,1], 0];
+
+ry_ec4 = [ [ry_pos[X], -ry_pos[Y], ry_pos[Z]], [-1,0,0], 0];
+ry_en4 = [ ry_ec4[0], [0,-1,1], 0];
+
+//-- For debugging
+//connector(ry_ec4);
+//connector(ry_en4);
+
+bconcave_corner_attach(ry_ec1, ry_en1, l=ry_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(ry_ec2, ry_en2, l=ry_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(ry_ec3, ry_en3, l=ry_th, cr=foot_size[Z], cres=0);
+bconcave_corner_attach(ry_ec4, ry_en4, l=ry_th, cr=foot_size[Z], cres=0);
 
 
 //--- Things TODO
-//-- * Feet reinforcements
 //-- * (optional) more cutouts
 

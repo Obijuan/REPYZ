@@ -1,69 +1,88 @@
+//-----------------------------------------------------------------------
+//-- REPYZ modules
+//-----------------------------------------------------------------------
+//-- (c) Juan Gonzalez-Gomez (Obijuan). May-2013
+//-- REPYZ modules derives from:
+//--
+//--  REPY V1 (obijuan) http://www.thingiverse.com/thing:13442
+//--  REPY v2, by David Estevez: https://github.com/David-Estevez/REPY-2.0
+//-------------------------------------------------------------------------
+//-- Released under the GPL license
+//-------------------------------------------------------------------------
+
 use <obiscad/bcube.scad>
 use <obiscad/bevel.scad>
 use <obiscad/attach.scad>
 
+//-- Constants for indexing vector components
 X = 0;
 Y = 1;
 Z = 2;
 
-//----------------- USER parameters ------------------
+//------------------------------------------------------------------
+//--       USER AREA.  Change the parameters to fit your needs
+//------------------------------------------------------------------
+
+//-------------  Base parameters
 base_side = 52;
-base_th = 3;
-base_cr = 3;
-base_cres = 4;
+base_th = 3;      //-- Base thickness
+base_cr = 3;      //-- Base corner radius
+base_cres = 4;    //-- Base corner resolution
 
-ear_lx = 23.8;
-ear_lz = 7.4;
+//------------ Servo parameters
+ear_size = [2.5, 18, 7.4];  //-- Servo ears size
 
-ear_size = [2.5, 18, 7.4];
-ear_pos_h = 1.5;
+//-- Distance between the top and lower servo ears
+ear_dx = 23.8;
 
+//----------- Feet parameters 
 foot_th = 6;
-foot_size = [foot_th + ear_size[X], 23, ear_lz];
+foot_ly = 23;           //-- Feet length in the y axis
+foot_drill_diam = 3.2;  
+foot_drill_h = 1.6;     //-- Drills height form the module base
+foot_drill_dx_m = 6.6;  //-- Distance between the two drills
 
-foot_drill_diam = 3.2;
-foot_drill_h = 1.6;
+//--------- Captive nuts
+nut_h = 3;
+nut_radius = 6.6/2;   
+
+//--- SKYMEGA Drills
+sky_dd = 15;            //-- Distance
+sky_drill_diam = 3.2;   //-- Drill diam
+
+//------------------------------------------------------------------
+//--    DATA AREA.  More parameters calculated from the user params
+//------------------------------------------------------------------
+
+//---------  BASE
+base_size = [base_side, base_side, base_th];
+
+
+//--------- Feet calculations
+foot_size = [foot_th + ear_size[X], foot_ly, ear_size[Z]];
 
 //-- Distance between the center of the two
 //-- foot drills
-foot_drill_dx = 6.6 + foot_drill_diam;
+foot_drill_dx = foot_drill_dx_m + foot_drill_diam;
 
-//---------------------- DATA calculation
-base_size = [base_side, base_side, base_th];
-
-//-- Distance in x between the two feet
-feet_dx = ear_lx - 2 * foot_th;
+//-- Distance between the two feet (along x axis)
+feet_dx = ear_dx - 2 * foot_th;
 
 //-- Feet location coordinates
 foot_pos = [foot_size[X]/2 + feet_dx/2,
             0,
             foot_size[Z]/2 + base_size[Z]/2 - 0.01];
-
-            //foot_pos[X] - foot_size[X]
-//-- Steps----
-step1_size = [2.5, foot_size[Y], 1.5];
-step1_pos = [-step1_size[X]/2 - foot_pos[X] - foot_size[X]/2,
-            0,
-            step1_size[Z]/2 + base_size[Z]/2];
             
-//-- captive Nuts
-nut_h = 3;
-nut_radius = 6.6/2;            
-            
+//-- temp value used for intersections
 extra = 5;
 
-
-//--- SKYMEGA Drills
-sky_dd = 15;  //-- Distance
-
+//--- Create the skymega drill table
 sky_drill_table = [
   [sky_dd, sky_dd, 0],
   [-sky_dd, sky_dd, 0],
   [-sky_dd, -sky_dd, 0],
   [sky_dd, -sky_dd, 0],
 ];
-
-sky_drill_diam = 3.2;
 
 
 //--- Center cutouts
@@ -100,6 +119,9 @@ ry_en2 = [ ry_ec2[0], [0,-1,1], 0];
 *connector(ry_ec4);
 *connector(ry_en4);
 
+//----------------------------------------------------------------------- 
+//-                    PART building
+//-----------------------------------------------------------------------
 
 module foot()
 {
@@ -161,41 +183,41 @@ module foot()
   }
 
 }
- 
-*foot(); 
+
+module repyz_body()
+{
+
+  difference() {
+    //-- The base
+    bcube(base_size, cr = base_cr, cres = base_cres);
+    
+    //-- Skymega drills
+    for (drill = sky_drill_table) {
+      translate(drill)
+	cylinder(r=sky_drill_diam/2, h=base_size[Z]+extra,center=true, $fn=6);
+    }
+    
+    //-- Central cutout
+    bcube(co1_size, cr = base_cr, cres = base_cres);
+
+  }  
+    
+  //-- The feet
+
+  //-- Right foot
+  translate(foot_pos)
+  rotate([0,0,180])
+  foot();
+
+  //-- Left foot
+  translate([-foot_pos[X], foot_pos[Y], foot_pos[Z]])
+  foot();
+}
 
 
- 
-//--------- PART building -----------------
-difference() {
-  //-- The base
-  bcube(base_size, cr = base_cr, cres = base_cres);
-  
-  //-- Skymega drills
-  for (drill = sky_drill_table) {
-    translate(drill)
-      cylinder(r=sky_drill_diam/2, h=base_size[Z]+extra,center=true, $fn=6);
-  }
-  
-  //-- Central cutout
-  bcube(co1_size, cr = base_cr, cres = base_cres);
+//----------------------------------------------------
+//--    MAIN  
+//----------------------------------------------------
+repyz_body();
 
-}  
-  
-//-- The feet
-
-//-- Right foot
-//color("blue")
-translate(foot_pos)
-rotate([0,0,180])
-foot();
-
-//-- Left foot
-//color("blue")
-translate([-foot_pos[X], foot_pos[Y], foot_pos[Z]])
-foot();
-
-
-//--- Things TODO
-//-- * (optional) more cutouts
 

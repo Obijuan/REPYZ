@@ -69,7 +69,20 @@ sky_drill_diam = 3.2;   //-- Drill diam
 //----------------------- Arms
 //-- The arms are the two sides of the module head part
 
-arm_size = [4, 25,  38];
+//--- (optional)  Bearing on the fake shaft
+//-- Set to true for the PRO version, false for the standar version
+fake_shaft_bearing = false;
+
+bearing_diam = 22;
+
+//-- Extra length on the arm (y-axis) when the bearing is used
+//-- When not used it is 0
+arm_extra_y_length = (fake_shaft_bearing == true) ? 6 : 0;
+
+//-- Arm size for the PRO version (with bearing)
+//-- and the standar version
+arm_size = [4, 27 + arm_extra_y_length,  38];
+  
 arm_dx = 40;  //-- Distance between the right and left arms
 
 //------------------------------------------------------------------
@@ -356,9 +369,13 @@ module left_arm()
      //-- Fake shaft drill
      translate([0,0,arm_size[Z]/2])
       rotate([0,90,0])
-      cylinder(r = fs_diam/2, h = arm_size[X] + extra, center = true);
+      if (fake_shaft_bearing == true)
+         cylinder(r = bearing_diam/2, h = arm_size[X] + extra, center = true);
+      else
+        cylinder(r = fs_diam/2, h = arm_size[X] + extra, center = true);
    }   
    
+   //-- Reinforment in the x axis (outer side)
    bconcave_corner_attach(rax2_ec1, rax2_en1, l=rax2_l, cr=rax2_cr, cres=rax_cres, th=0.1);
    
 }
@@ -396,11 +413,11 @@ module repyz_head()
 //----------------------------------------------------
 
 //-- Module body: on the right
-translate([base_size[X]/2 + 5,0,0])
+*translate([base_size[X]/2 + 5,0,0])
 repyz_body();
 
 //-- Module head: on the left
-translate([-base_size[X]/2 - 5, 0, 0])
+//translate([-base_size[X]/2 - 5, 0, 0])
 repyz_head();
 
 

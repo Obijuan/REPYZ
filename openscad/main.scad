@@ -7,6 +7,13 @@
 //--  REPY V1 (obijuan) http://www.thingiverse.com/thing:13442
 //--  REPY v2, by David Estevez: https://github.com/David-Estevez/REPY-2.0
 //-------------------------------------------------------------------------
+//-- This file includes 2 of the 3 parts needed for assembling the module
+//--   - the body
+//--   - the head
+//--
+//--   The body is the part where the servo is attached
+//--   The head is screwed to the servo shaft
+//-------------------------------------------------------------------------
 //-- Released under the GPL license
 //-------------------------------------------------------------------------
 
@@ -58,6 +65,12 @@ nut_radius = 6.6/2;
 //--- SKYMEGA Drills
 sky_dd = 15;            //-- Distance
 sky_drill_diam = 3.2;   //-- Drill diam
+
+//----------------------- Arms
+//-- The arms are the two sides of the module head part
+
+arm_size = [4, 25,  38];
+arm_dx = 40;  //-- Distance between the right and left arms
 
 //------------------------------------------------------------------
 //--    DATA AREA.  More parameters calculated from the user params
@@ -127,6 +140,65 @@ ry_en2 = [ ry_ec2[0], [0,-1,1], 0];
 *connector(rx_en1);
 *connector(ry_ec4);
 *connector(ry_en4);
+
+//------------  Module head
+
+right_arm_pos = [-arm_size[X]/2 + base_size[X]/2,
+                 0,
+                 arm_size[Z]/2 + base_size[Z]/2 -0.01];
+                 
+left_arm_pos = [right_arm_pos[X] - arm_size[X] +-arm_dx,
+                 right_arm_pos[Y],
+                 right_arm_pos[Z]];         
+
+//-- Reinforment for the arm in y  
+ray_th = arm_size[X];
+ray_pos = [0, -arm_size[Y]/2, -arm_size[Z]/2];
+ray_cr = base_size[Y]/2 - arm_size[Y]/2;
+ray_cres = 0;
+
+ray_ec1 = [[ray_pos[X], ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
+ray_en1 = [ ray_ec1[0], [0,-1,1], 0];
+
+ray_ec2 = [[ray_pos[X], -ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
+ray_en2 = [ ray_ec2[0], [0,1,1], 0];
+
+//-- Arm beveling
+ab_pos = [arm_size[X]/2, -base_size[Y]/2, -arm_size[Z]/2] ;
+
+ab_ec1 =[ ab_pos, [0,0,1], 0]; 
+ab_en1 = [ ab_ec1[0], [1,-1,0], 0];
+
+ab_ec2 =[ [ab_pos[X], -ab_pos[Y], ab_pos[Z]], [0,0,1], 0]; 
+ab_en2 = [ ab_ec1[0], [1,1,0], 0];
+
+//-- Reinforment for the arm in x
+rax_l = arm_size[Y];
+rax_pos = [-arm_size[X]/2, 0, -arm_size[Z]/2];
+rax_cr = 4;
+rax_cres = 0;
+
+rax_ec1 = [[rax_pos[X], rax_pos[Y], rax_pos[Z]], [0,1,0], 0];
+rax_en1 = [ rax_ec1[0], [-1,0,1], 0];
+
+//-- Reinforment of the left arm in x (outter side)
+rax2_cr = base_size[X] - 2*arm_size[X] - arm_dx;
+rax2_l = rax_l;
+rax2_pos = [rax_pos[X] + arm_size[X], rax_pos[Y], rax_pos[Z]];
+rax2_ec1 = [[rax2_pos[X], rax2_pos[Y], rax2_pos[Z]], [0,1,0], 0];
+rax2_en1 = [ rax2_ec1[0], [1,0,1], 0];
+
+*connector(rax2_ec1);
+*connector(rax2_en1);
+
+*connector(ray_ec2);
+*connector(ray_en2);
+*connector(ab_ec1);
+*connector(ab_en1);
+
+//-- Right arm cutout
+ra_co1_size = [arm_size[X]+extra, servo_shaft_diam, arm_size[Y]];
+
 
 //----------------------------------------------------------------------- 
 //-                    PART building
@@ -224,68 +296,6 @@ module repyz_body()
 }
 
 
-//----------------------------------------------------------------------------
-
-//-- Arm
-arm_size = [4, 25,  38];
-arm_dx = 40;  //-- Distance between the right and left arms
-
-right_arm_pos = [-arm_size[X]/2 + base_size[X]/2,
-                 0,
-                 arm_size[Z]/2 + base_size[Z]/2 -0.01];
-                 
-left_arm_pos = [right_arm_pos[X] - arm_size[X] +-arm_dx,
-                 right_arm_pos[Y],
-                 right_arm_pos[Z]];         
-
-//-- Reinforment for the arm in y  
-ray_th = arm_size[X];
-ray_pos = [0, -arm_size[Y]/2, -arm_size[Z]/2];
-ray_cr = base_size[Y]/2 - arm_size[Y]/2;
-ray_cres = 0;
-
-ray_ec1 = [[ray_pos[X], ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
-ray_en1 = [ ray_ec1[0], [0,-1,1], 0];
-
-ray_ec2 = [[ray_pos[X], -ray_pos[Y], ray_pos[Z]], [1,0,0], 0];
-ray_en2 = [ ray_ec2[0], [0,1,1], 0];
-
-//-- Arm beveling
-ab_pos = [arm_size[X]/2, -base_size[Y]/2, -arm_size[Z]/2] ;
-
-ab_ec1 =[ ab_pos, [0,0,1], 0]; 
-ab_en1 = [ ab_ec1[0], [1,-1,0], 0];
-
-ab_ec2 =[ [ab_pos[X], -ab_pos[Y], ab_pos[Z]], [0,0,1], 0]; 
-ab_en2 = [ ab_ec1[0], [1,1,0], 0];
-
-//-- Reinforment for the arm in x
-rax_l = arm_size[Y];
-rax_pos = [-arm_size[X]/2, 0, -arm_size[Z]/2];
-rax_cr = 4;
-rax_cres = 0;
-
-rax_ec1 = [[rax_pos[X], rax_pos[Y], rax_pos[Z]], [0,1,0], 0];
-rax_en1 = [ rax_ec1[0], [-1,0,1], 0];
-
-//-- Reinforment of the left arm in x (outter side)
-rax2_cr = base_size[X] - 2*arm_size[X] - arm_dx;
-rax2_l = rax_l;
-rax2_pos = [rax_pos[X] + arm_size[X], rax_pos[Y], rax_pos[Z]];
-rax2_ec1 = [[rax2_pos[X], rax2_pos[Y], rax2_pos[Z]], [0,1,0], 0];
-rax2_en1 = [ rax2_ec1[0], [1,0,1], 0];
-
-*connector(rax2_ec1);
-*connector(rax2_en1);
-
-*connector(ray_ec2);
-*connector(ray_en2);
-*connector(ab_ec1);
-*connector(ab_en1);
-
-//-- Right arm cutout
-ra_co1_size = [arm_size[X]+extra, servo_shaft_diam, arm_size[Y]];
-
 //----------------------------------------------------
 //--  Arm shape. Common to the left and right arms
 //----------------------------------------------------
@@ -353,11 +363,10 @@ module left_arm()
    
 }
 
-*right_arm();
-*left_arm();
-
-//-- Head base (the same than the body base)
-difference() {
+module repyz_head()
+{
+  //-- Head base (the same than the body base)
+  difference() {
     //-- The base
     bcube(base_size, cr = base_cr, cres = base_cres);
     
@@ -372,20 +381,26 @@ difference() {
 
   }  
 
+  translate(right_arm_pos)
+  right_arm();
 
-translate(right_arm_pos)
-right_arm();
+  translate(left_arm_pos)
+  rotate([0,0,180])
+  left_arm();
 
-translate(left_arm_pos)
-rotate([0,0,180])
-left_arm();
-
+}
 
 
 //----------------------------------------------------
 //--    MAIN  
 //----------------------------------------------------
-*translate([0,0,20])
+
+//-- Module body: on the right
+translate([base_size[X]/2 + 5,0,0])
 repyz_body();
+
+//-- Module head: on the left
+translate([-base_size[X]/2 - 5, 0, 0])
+repyz_head();
 
 

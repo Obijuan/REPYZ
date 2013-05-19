@@ -421,3 +421,7 @@ repyz_body();
 repyz_head();
 
 
+//-- TODO
+//- Modify big drills (fake shaft and bearing hole) to be reprap teardrops
+//- Render the whole module, with the 3 parts and the servo
+

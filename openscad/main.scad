@@ -16,10 +16,10 @@
 //-------------------------------------------------------------------------
 //-- Released under the GPL license
 //-------------------------------------------------------------------------
-
 use <obiscad/bcube.scad>
 use <obiscad/bevel.scad>
 use <obiscad/attach.scad>
+use <teardrop.scad>
 
 //-- Constants for indexing vector components
 X = 0;
@@ -71,7 +71,7 @@ sky_drill_diam = 3.2;   //-- Drill diam
 
 //--- (optional)  Bearing on the fake shaft
 //-- Set to true for the PRO version, false for the standar version
-fake_shaft_bearing = false;
+fake_shaft_bearing = true;
 
 bearing_diam = 22;
 
@@ -154,6 +154,7 @@ ry_en2 = [ ry_ec2[0], [0,-1,1], 0];
 *connector(ry_ec4);
 *connector(ry_en4);
 
+
 //------------  Module head
 
 right_arm_pos = [-arm_size[X]/2 + base_size[X]/2,
@@ -186,7 +187,7 @@ ab_ec2 =[ [ab_pos[X], -ab_pos[Y], ab_pos[Z]], [0,0,1], 0];
 ab_en2 = [ ab_ec1[0], [1,1,0], 0];
 
 //-- Reinforment for the arm in x
-rax_l = arm_size[Y];
+rax_l = 25;
 rax_pos = [-arm_size[X]/2, 0, -arm_size[Z]/2];
 rax_cr = 4;
 rax_cres = 0;
@@ -355,7 +356,9 @@ module right_arm()
     for (i=[0:2]) {
       rotate([0,0,-90*i])
         translate([0, rounded_horn_drill_distance, 0])
-          cylinder(r=servo_horn_drill_diam/2, h=arm_size[X]+extra, center=true);
+          rotate([0,0,90 + 90*i])
+            teardrop(r = servo_horn_drill_diam/2, h = arm_size[X] + extra);
+          //cylinder(r=servo_horn_drill_diam/2, h=arm_size[X]+extra, center=true);
     }
   }
   
@@ -369,10 +372,12 @@ module left_arm()
      //-- Fake shaft drill
      translate([0,0,arm_size[Z]/2])
       rotate([0,90,0])
+      rotate([0,0,90])
       if (fake_shaft_bearing == true)
-         cylinder(r = bearing_diam/2, h = arm_size[X] + extra, center = true);
+         //cylinder(r = bearing_diam/2, h = arm_size[X] + extra, center = true);
+         teardrop(r = bearing_diam/2, h = arm_size[X] + extra);
       else
-        cylinder(r = fs_diam/2, h = arm_size[X] + extra, center = true);
+        teardrop(r = fs_diam/2, h = arm_size[X] + extra);
    }   
    
    //-- Reinforment in the x axis (outer side)

@@ -71,7 +71,7 @@ sky_drill_diam = 3.2;   //-- Drill diam
 
 //--- (optional)  Bearing on the fake shaft
 //-- Set to true for the PRO version, false for the standar version
-fake_shaft_bearing = true;
+fake_shaft_bearing = false;
 
 bearing_diam = 22;
 

@@ -418,7 +418,7 @@ module repyz_head()
 //----------------------------------------------------
 
 //-- Module body: on the right
-*translate([base_size[X]/2 + 5,0,0])
+translate([base_size[X]/2 + 5,0,0])
 repyz_body();
 
 //-- Module head: on the left

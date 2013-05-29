@@ -71,9 +71,9 @@ sky_drill_diam = 3.2;   //-- Drill diam
 
 //--- (optional)  Bearing on the fake shaft
 //-- Set to true for the PRO version, false for the standar version
-fake_shaft_bearing = false;
+fake_shaft_bearing = true;
 
-bearing_diam = 22;
+bearing_diam = 22+0.5;
 
 //-- Extra length on the arm (y-axis) when the bearing is used
 //-- When not used it is 0
@@ -418,7 +418,7 @@ module repyz_head()
 //----------------------------------------------------
 
 //-- Module body: on the right
-translate([base_size[X]/2 + 5,0,0])
+*translate([base_size[X]/2 + 40,0,0])
 repyz_body();
 
 //-- Module head: on the left

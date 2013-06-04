@@ -9,7 +9,7 @@ Introduction
 --
 REPYZ modules are an evolution of the REPY modules. The new fetures are:
 
--Simplified structure.  The body is smaller than in previous versions, thanks to the new sevo lower cover, with a fake shaft
+- Simplified structure.  The body is smaller than in previous versions, thanks to the new sevo lower cover, with a fake shaft
 
 - More robust and compact
 
@@ -81,17 +81,17 @@ Software
 Author
 --
 
--Juan Gonzalez-Gomez (Obijuan)
+- Juan Gonzalez-Gomez (Obijuan)
 
 Credits
 --
 
-- David Estevez:  Is the author of the Repy modules v2. Repyz were inspired in Repy v2:
+- **David Estevez**:  Is the author of the Repy modules v2. Repyz were inspired in Repy v2:
     http://www.dsquaredrobotics.com/wiki/index.php?title=REPY-2.0
 
-- Andres Prieto-Moreno. Is the author of the MY1 modules, in which the repyz are also inspired. He also suggested me the idea of including a lower servo cover with ears for the servos. Because of these ears, the body of the module has been dramatically simplified.
+- **Andres Prieto-Moreno**. Is the author of the MY1 modules, in which the repyz are also inspired. He also suggested me the idea of including a lower servo cover with ears for the servos. Because of these ears, the body of the module has been dramatically simplified.
 
-- Gocha is the cat of Carlos Garcia Saura. It is the one that appears on the REPYZ logo
+- **Gocha** is the cat of Carlos Garcia Saura. It is the one that appears on the REPYZ logo
 
 
 License

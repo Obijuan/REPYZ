@@ -72,11 +72,22 @@ Software
 
   For generating the locomotion of snake robots, I am using sinusoidal generators. More information can be found on my phd dissertation:
 
+http://www.iearobotics.com/wiki/index.php?title=Juan_Gonzalez:PhD_Thesis
+
    I have implemented the ardusnake library (for arduino and arudino compatible boards). It is very simple to use and understand:
 
   https://github.com/Obijuan/ArduSnake
 
   http://www.thingiverse.com/thing:21401
+
+Links to other modules
+--
+
+- **Y1 modules**: http://www.iearobotics.com/wiki/index.php?title=M%C3%B3dulos_Y1
+- **MY1 modules**: http://www.iearobotics.com/wiki/index.php?title=M%C3%B3dulos_MY
+- **REPY v1**: http://www.thingiverse.com/thing:688
+- **REPY v1.1**: http://www.thingiverse.com/thing:13442
+- **REPY v2**: http://www.dsquaredrobotics.com/wiki/index.php?title=REPY-2.0
 
 Author
 --
